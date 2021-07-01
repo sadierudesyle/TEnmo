@@ -73,4 +73,8 @@ public class ConsoleService {
 		} while(result == null);
 		return result;
 	}
+
+	public void DisplayMessage(String input) {
+		System.out.println(input);
+	}
 }
