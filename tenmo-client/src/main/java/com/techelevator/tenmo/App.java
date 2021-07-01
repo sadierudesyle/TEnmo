@@ -68,6 +68,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
+//determine userid from currentUser
+//select balance from accounts table for that userid
+//print out Your Current Account Balance is ...
 		// TODO Auto-generated method stub
 		
 	}
