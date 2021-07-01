@@ -10,6 +10,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 
 public class App {
 
@@ -119,7 +121,24 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		RestTemplate restTemplate = new RestTemplate();
+		Integer getUserId = currentUser.getUser().getId();
+		ConService spitItOut = new ConService();
+
+
+//
+		HttpHeaders headers = new HttpHeaders();
+//				headers.setBearerAuth(AUTH_TOKEN);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity entity = new HttpEntity<>(headers);
+
+		ResponseEntity<List>  response = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
+				HttpMethod.GET, entity, List.class);
+
+		if (response.getBody() != null) {
+			System.out.println(response);
+		}
 		
 	}
 

@@ -7,6 +7,8 @@ public class Transfer {
     private int accountFrom;
     private int accountTo;
     private double amount;
+    private String username;
+
 
     public int getTransferId() {
         return transferId;
@@ -54,5 +56,13 @@ public class Transfer {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
