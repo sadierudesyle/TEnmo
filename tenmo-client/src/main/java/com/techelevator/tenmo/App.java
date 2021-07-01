@@ -4,7 +4,11 @@ import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.ConService;
 import com.techelevator.view.ConsoleService;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
 
 
 public class App {
@@ -68,15 +72,51 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		}
 	}
 
+	@RequestMapping
 	private void viewCurrentBalance() {
-//determine userid from currentUser
-//select balance from accounts table for that userid
-//print out Your Current Account Balance is ...
-		// TODO Auto-generated method stub
+		RestTemplate restTemplate = new RestTemplate();
+		Integer getUserId = currentUser.getUser().getId();
+		ConService spitItOut = new ConService();
 
-	Integer getUserId = currentUser.getUser().getId();
+
+//		try {
+			HttpHeaders headers = new HttpHeaders();
+//				headers.setBearerAuth(AUTH_TOKEN);
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity entity = new HttpEntity<>(headers);
+
+		ResponseEntity<Double>  response = restTemplate.exchange(API_BASE_URL + "getbalance/" + getUserId,
+					HttpMethod.GET, entity, Double.class);
+
+//		Double response = restTemplate.getForObject(API_BASE_URL + "getbalance/" + getUserId,
+//				entity, Double.class);
+
+			if (response.getBody() != null) {
+				Double amt = response.getBody();
+				System.out.println(String.format("Your current account balance is: $%.2f", amt));
+
+//				spitItOut.DisplayMessage(/''String.format("Your current account balance is: $%.2f", amt)/'';
+
+
+				String messageOut = "Your current account balance is: " + String.valueOf(response.getBody());
+				System.out.println(messageOut);
+				spitItOut.DisplayMessage("Your current balance is: " + response.getBody());
+			}
+//        return response.getBody();
+
+//		}
+//			} catch (RestClientResponseException ex) {
+//				throw new HotelServiceException(ex.getMessage());
+//			} catch (ResourceAccessException ex) {
+//				throw new HotelServiceException(ex.getMessage());
+//			}
+//			return null;
+//		}
 //	Double doubleBalance =
+
 	}
+
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub

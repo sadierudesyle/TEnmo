@@ -6,6 +6,8 @@ import com.techelevator.tenmo.model.LoginDTO;
 import com.techelevator.tenmo.model.RegisterUserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
+import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,39 +24,20 @@ import javax.validation.Valid;
 @RestController
 public class DataController {
 
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private UserDao userDao;
     private JdbcAccountsDAO jdbcAccountsDAO;
 
-    public DataController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.userDao = userDao;
+
+    public DataController(JdbcAccountsDAO jdbcAccountsDAO) {
+        this.jdbcAccountsDAO = jdbcAccountsDAO;
     }
 
-//    @RequestMapping(value = "/login", method = RequestMethod.POST)
-//    public LoginResponse login(@Valid @RequestBody LoginDTO loginDto) {
-//
-//        UsernamePasswordAuthenticationToken authenticationToken =
-//                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
-//
-//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String jwt = tokenProvider.createToken(authentication, false);
-//
-//        User user = userDao.findByUsername(loginDto.getUsername());
-//
-//        return new LoginResponse(jwt, user);
-//    }
-
-    @ResponseStatus(HttpStatus.CREATED)
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public void register(@Valid @RequestBody RegisterUserDTO newUser) {
-        if (!userDao.create(newUser.getUsername(), newUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User registration failed.");
-        }
+    @RequestMapping(value = "/getbalance/{id}", method = RequestMethod.GET)
+    public Double getBal(@PathVariable int id) {
+        return jdbcAccountsDAO.getAcctBal(id);
     }
+
+
 }
 
 
