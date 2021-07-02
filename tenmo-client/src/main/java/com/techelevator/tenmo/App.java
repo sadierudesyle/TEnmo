@@ -2,6 +2,7 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.XferData;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class App {
@@ -121,6 +123,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 
 	private void viewTransferHistory() {
+//		XferData history = new XferData();
 		RestTemplate restTemplate = new RestTemplate();
 		Integer getUserId = currentUser.getUser().getId();
 		ConService spitItOut = new ConService();
@@ -129,23 +132,29 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 //				headers.setBearerAuth(AUTH_TOKEN);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
-		HttpEntity entity = new HttpEntity<>(headers);
+		HttpEntity entity = new HttpEntity(headers);
 
-		ResponseEntity<List>  response = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
-				HttpMethod.GET, entity, List.class);
+		ResponseEntity<XferData>  history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
+				HttpMethod.GET, entity, XferData.class);
+
+
 
 //		ResponseEntity<List> id = restTemplate.exchange(API_BASE_URL + )
+//
+//		for (int i = 0; i < 3; i++){
+//			response[i].get
+//		}
 
-		if (response.getBody() != null) {
-			System.out.println("---------------------------------");
-			System.out.println("Transfers");
-			System.out.println("ID       From/To           Amount");
-			System.out.println("---------------------------------");
-			System.out.println(response.getBody());
-			System.out.println("---------------------------------");
-
-//			System.out.println(String.format("Your current account balance is: $%.2f", amt));
-		}
+//		if (history.getBody() != null) {
+//			System.out.println("---------------------------------");
+//			System.out.println("Transfers");
+//			System.out.println("ID       From/To           Amount");
+//			System.out.println("---------------------------------");
+//			System.out.println(history.getBody());
+//			System.out.println("---------------------------------");
+//
+////			System.out.println(String.format("Your current account balance is: $%.2f", amt));
+//		}
 		
 	}
 
