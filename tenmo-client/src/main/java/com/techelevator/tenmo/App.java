@@ -101,9 +101,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 //				spitItOut.DisplayMessage(/''String.format("Your current account balance is: $%.2f", amt)/'';
 
 
-				String messageOut = "Your current account balance is: " + String.valueOf(response.getBody());
-				System.out.println(messageOut);
-				spitItOut.DisplayMessage("Your current balance is: " + response.getBody());
+//				String messageOut = "Your current account balance is: " + String.valueOf(response.getBody());
+//				System.out.println(messageOut);
+//				spitItOut.DisplayMessage("Your current balance is: " + response.getBody());
 			}
 //        return response.getBody();
 
@@ -134,8 +134,17 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		ResponseEntity<List>  response = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
 				HttpMethod.GET, entity, List.class);
 
+//		ResponseEntity<List> id = restTemplate.exchange(API_BASE_URL + )
+
 		if (response.getBody() != null) {
+			System.out.println("---------------------------------");
+			System.out.println("Transfers");
+			System.out.println("ID       From/To           Amount");
+			System.out.println("---------------------------------");
 			System.out.println(response.getBody());
+			System.out.println("---------------------------------");
+
+//			System.out.println(String.format("Your current account balance is: $%.2f", amt));
 		}
 		
 	}
