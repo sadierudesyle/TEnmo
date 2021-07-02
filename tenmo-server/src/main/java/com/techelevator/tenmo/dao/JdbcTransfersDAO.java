@@ -20,52 +20,39 @@ public class JdbcTransfersDAO implements TransfersDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<XferData> transfers = new ArrayList<XferData>();
-//AR    public List<Transfer> transfers = new ArrayList<>();
+
+
 
     public List<XferData> getAllTransfers(int userId) {
-//        public List<Transfer> getAllTransfers(int userId) {
-        getTransfersFrom(userId);
-        getTransfersTo(userId);
+        List<XferData> transfers = new ArrayList<XferData>();
+        getTransfersFrom(userId, transfers);
+        getTransfersTo(userId, transfers);
         return transfers;
     }
 
-    public void getTransfersFrom(int userId) {
+    public void getTransfersFrom(int userId, List<XferData> transfers) {
       sql = "SELECT transfer_id, amount, 'From' as From_To, username FROM transfers AS t  "+
                 "JOIN accounts a on account_from = a.account_id  "+
                 "JOIN users u ON a.user_id = u.user_id  "+
                 "WHERE t.account_to IN (select account_id from accounts a where a.user_id = ?) ";
 
-
-//AR        sql = "SELECT transfer_id, transfer_type_id, u.username, amount FROM transfers AS t " +
-//AR                "JOIN accounts a ON a.account_id = t.account_from " +
-//AR                "JOIN users u ON u.user_id = a.user_id " +
-//AR                "WHERE transfer_type_id = 1 AND transfer_status_id = 2 AND u.user_id = ?";
         SqlRowSet returnVal = jdbcTemplate.queryForRowSet(sql, userId);
         while(returnVal.next()) {
             XferData transfer = mapRowToTransfer(returnVal);
             transfers.add(transfer);
         }
-//        while(returnVal.next()) {
-//            Transfer transfer = mapRowToTransfer(returnVal, 1);
-//            transfers.add(transfer);
-//        }
     }
 
 
-    public void getTransfersTo(int userId) {
+    public void getTransfersTo(int userId,List<XferData> transfers) {
         sql = "SELECT transfer_id, amount, 'To' as From_To, username FROM transfers AS t "+
         "JOIN accounts a on account_to = a.account_id "+
         "JOIN users u ON a.user_id = u.user_id "+
         "WHERE t.account_from IN (select account_id from accounts a where a.user_id = ?)" ;
 
-//AR        sql = "SELECT transfer_id, transfer_type_id, u.username, amount FROM transfers AS t " +
-//AR                "JOIN accounts a ON a.account_id = t.account_to " +
-//AR                "JOIN users u ON u.user_id = a.user_id " +
-//AR                "WHERE transfer_type_id = 2 AND transfer_status_id = 2 AND u.user_id = ?";
-        SqlRowSet returnVal = jdbcTemplate.queryForRowSet(sql, userId);
-        while(returnVal.next()) {
-            XferData transfer = mapRowToTransfer(returnVal);
+        SqlRowSet returnV = jdbcTemplate.queryForRowSet(sql, userId);
+        while(returnV.next()) {
+            XferData transfer = mapRowToTransfer(returnV);
             transfers.add(transfer);
         }
 //        while(returnVal.next()) {

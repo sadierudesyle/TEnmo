@@ -127,6 +127,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		RestTemplate restTemplate = new RestTemplate();
 		Integer getUserId = currentUser.getUser().getId();
 		ConService spitItOut = new ConService();
+		XferData[] items = null;
+		ResponseEntity<XferData[]>  history = null;
 
 		HttpHeaders headers = new HttpHeaders();
 //				headers.setBearerAuth(AUTH_TOKEN);
@@ -134,29 +136,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		HttpEntity entity = new HttpEntity(headers);
 
-		ResponseEntity<XferData[]>  history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
+//		ResponseEntity<XferData[]>  history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
+		history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
 				HttpMethod.GET, entity, XferData[].class);
 
+		items = history.getBody();
 
 
-//		ResponseEntity<List> id = restTemplate.exchange(API_BASE_URL + )
-//
-//		for (int i = 0; i < 3; i++){
-//			response[i].get
-//		}
-
-//		if (history.getBody() != null) {
-//			System.out.println("---------------------------------");
-//			System.out.println("Transfers");
-//			System.out.println("ID       From/To           Amount");
-//			System.out.println("---------------------------------");
-//			System.out.println(history.getBody());
-//			System.out.println("---------------------------------");
-//
-////			System.out.println(String.format("Your current account balance is: $%.2f", amt));
-//		}
-		
-	}
+		if (history.getBody() != null) {
+			System.out.println("------------------------------------");
+			System.out.println(" Transfers");
+			System.out.println(" ID      From/To             Amount");
+			System.out.println("------------------------------------");
+		for (int i = 0; i< items.length; i++){
+			int val1 = items[i].getTransferId();
+			String val2 = items[i].getDirection();
+			String val3 = items[i].getUsername();
+			double  val4  = items[i].getAmount();
+			System.out.println(String.format(" %d %7s: %-12s\t$%.2f", val1, val2, val3,val4));
+		}
+			System.out.println("------------------------------------");
+			System.out.println("Please enter transfer ID to view details (0 to cancel):");
+		}
+		else {System.out.println("Sorry No Transfers");}
+    }
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
