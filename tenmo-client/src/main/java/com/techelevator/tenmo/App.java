@@ -125,8 +125,6 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Integer getUserId = currentUser.getUser().getId();
 		ConService spitItOut = new ConService();
 
-
-//
 		HttpHeaders headers = new HttpHeaders();
 //				headers.setBearerAuth(AUTH_TOKEN);
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -137,7 +135,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				HttpMethod.GET, entity, List.class);
 
 		if (response.getBody() != null) {
-			System.out.println(response);
+			System.out.println(response.getBody());
 		}
 		
 	}

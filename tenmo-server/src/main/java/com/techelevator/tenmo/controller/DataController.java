@@ -3,10 +3,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.JdbcAccountsDAO;
 import com.techelevator.tenmo.dao.JdbcTransfersDAO;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.LoginDTO;
-import com.techelevator.tenmo.model.RegisterUserDTO;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
 import org.springframework.data.relational.core.sql.In;
@@ -32,8 +29,10 @@ public class DataController {
     private JdbcTransfersDAO jdbcTransfersDAO;
 
 
-    public DataController(JdbcAccountsDAO jdbcAccountsDAO) {
+    public DataController(JdbcAccountsDAO jdbcAccountsDAO, JdbcTransfersDAO jdbcTransfersDAO)
+     {
         this.jdbcAccountsDAO = jdbcAccountsDAO;
+        this.jdbcTransfersDAO = jdbcTransfersDAO;
     }
 
     @RequestMapping(value = "/getbalance/{id}", method = RequestMethod.GET)
@@ -43,8 +42,9 @@ public class DataController {
 
 
     @RequestMapping(value = "/getalltransfers/{id}", method = RequestMethod.GET)
-    public List<Transfer> getAllTransfers(@PathVariable int id) {
-        return jdbcTransfersDAO.getAllTransfers(id);
+    public List<XferData> getAllTransfers(@PathVariable int id) {
+        int breakpoint = 1;
+        return jdbcTransfersDAO.getAllTransfers(id)     ;
     }
 }
 
