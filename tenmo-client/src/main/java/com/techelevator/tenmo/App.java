@@ -134,8 +134,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		HttpEntity entity = new HttpEntity(headers);
 
-		ResponseEntity<XferData>  history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
-				HttpMethod.GET, entity, XferData.class);
+		ResponseEntity<XferData[]>  history = restTemplate.exchange(API_BASE_URL + "getalltransfers/" + getUserId,
+				HttpMethod.GET, entity, XferData[].class);
 
 
 
