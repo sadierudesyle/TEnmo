@@ -58,6 +58,17 @@ public class DataController {
     public List<User> findForTransfer(@PathVariable int id) {
         return jdbcUserDao.findForTransfer(id);
     }
+
+
+    @RequestMapping(value = "/transfer/{id}/{amount}", method = RequestMethod.POST)
+    public Integer deductMoneySent(@PathVariable double amount, Integer id) {
+        return jdbcTransfersDAO.deductMoneySent(amount, id);
+    }
+
+    @RequestMapping(value = "/transfersend/{account}/{amount}", method = RequestMethod.POST)
+    public Integer sendMoney(@PathVariable double amount, Integer account) {
+        return jdbcTransfersDAO.sendMoney(amount, account);
+    }
 }
 
 

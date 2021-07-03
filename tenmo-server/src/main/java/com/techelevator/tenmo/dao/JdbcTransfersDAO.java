@@ -55,17 +55,25 @@ public class JdbcTransfersDAO implements TransfersDAO {
             XferData transfer = mapRowToTransfer(returnV);
             transfers.add(transfer);
         }
-//        while(returnVal.next()) {
-//            Transfer transfer = mapRowToTransfer(returnVal, 2);
-//            transfers.add(transfer);
         }
 
-//AR    private Transfer mapRowToTransfer(SqlRowSet results, int direction) {
-//AR    Transfer transfer = new Transfer();
-//AR    transfer.setTransferId(results.getInt("transfer_id"));
-//AR    transfer.setTransferTypeId(direction);
-//AR    transfer.setUsername(results.getString("username"));
-//AR    transfer.setAmount(results.getDouble("amount"));
+
+    public int sendMoney(double amount, Integer account) {
+        sql = "UPDATE accounts SET balance = balance + ?" +
+              "WHERE account_id = ?";
+
+      int rowsUpdt = jdbcTemplate.update(sql, amount, account);
+      return rowsUpdt;
+        }
+
+    public int deductMoneySent(double amount, Integer userId) {
+        sql = "UPDATE accounts SET balance = balance + ? " +
+                 "WHERE user_id = ?";
+      int rUpdt =  jdbcTemplate.update(sql, amount, userId);
+        return rUpdt;}
+
+
+
 private XferData mapRowToTransfer(SqlRowSet results) {
         XferData transfer = new XferData();
         transfer.setTransferId(results.getInt("transfer_id"));

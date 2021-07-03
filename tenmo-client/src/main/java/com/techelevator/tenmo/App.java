@@ -79,45 +79,17 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewCurrentBalance() {
 		RestTemplate restTemplate = new RestTemplate();
 		Integer getUserId = currentUser.getUser().getId();
-		ConService spitItOut = new ConService();
-
-
 //		try {
 			HttpHeaders headers = new HttpHeaders();
 //				headers.setBearerAuth(AUTH_TOKEN);
 			headers.setContentType(MediaType.APPLICATION_JSON);
-
 			HttpEntity entity = new HttpEntity<>(headers);
-
 		ResponseEntity<Double>  response = restTemplate.exchange(API_BASE_URL + "getbalance/" + getUserId,
 					HttpMethod.GET, entity, Double.class);
-
-//		Double response = restTemplate.getForObject(API_BASE_URL + "getbalance/" + getUserId,
-//				entity, Double.class);
-
 			if (response.getBody() != null) {
 				Double amt = response.getBody();
 				System.out.println(String.format("Your current account balance is: $%.2f", amt));
-
-//				spitItOut.DisplayMessage(/''String.format("Your current account balance is: $%.2f", amt)/'';
-
-
-//				String messageOut = "Your current account balance is: " + String.valueOf(response.getBody());
-//				System.out.println(messageOut);
-//				spitItOut.DisplayMessage("Your current balance is: " + response.getBody());
 			}
-//        return response.getBody();
-
-//		}
-//			} catch (RestClientResponseException ex) {
-//				throw new HotelServiceException(ex.getMessage());
-//			} catch (ResourceAccessException ex) {
-//				throw new HotelServiceException(ex.getMessage());
-//			}
-//			return null;
-//		}
-//	Double doubleBalance =
-
 	}
 
 
@@ -143,10 +115,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 
 		if (history.getBody() != null && items.length > 0) {
-			System.out.println("------------------------------------");
-			System.out.println(" Transfers");
-			System.out.println(" ID      From/To             Amount");
-			System.out.println("------------------------------------");
+			console.DisplayMessage("------------------------------------");
+			console.DisplayMessage(" Transfers");
+			console.DisplayMessage(" ID      From/To             Amount");
+			console.DisplayMessage("------------------------------------");
 			for (int i = 0; i < items.length; i++) {
 				int val1 = items[i].getTransferId();
 				String val2 = items[i].getDirection();
@@ -154,18 +126,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				double val4 = items[i].getAmount();
 				System.out.println(String.format(" %d %7s: %-12s\t$%.2f", val1, val2, val3, val4));
 			}
-			System.out.println("-------------------------------------------------------");
+			console.DisplayMessage("-------------------------------------------------------");
 			Integer input = console.getUserInputInteger("Please enter transfer ID to view details (0 to cancel)");
 
 			if (input.equals(0)) {
-				System.out.println("");
+				console.DisplayMessage("");
 			} else {
 				ResponseEntity<XferDetail> response = restTemplate.exchange(API_BASE_URL + "transferdetail/" + input,
 						HttpMethod.GET, entity, XferDetail.class);
 				XferDetail data = response.getBody();
 
 				if (data == null) {
-					System.out.println("Invalid entry.");
+					console.DisplayMessage("Invalid entry.");
 				} else {
 					String v1 = String.valueOf(data.getTransferId());
 					String v2 = String.valueOf(data.getUserFrom());
@@ -174,9 +146,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 					String v5 = String.valueOf(data.getStatus());
 					String v6 = String.format("%.2f", data.getAmount());
 
-					System.out.println("------------------------------------");
-					System.out.println("Transfer Details");
-					System.out.println("------------------------------------");
+					console.DisplayMessage("------------------------------------");
+					console.DisplayMessage("Transfer Details");
+					console.DisplayMessage("------------------------------------");
 
 
 					console.DisplayMessage("Id: " + v1);
@@ -194,33 +166,87 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		// TODO Auto-generated method stub
 		
 	}
+	private void sendBucks (){
+    	showTranfersCandidates();
+		Integer sendToAcct = console.getUserInputInteger
+				("Enter ID of user you are sending to (0 to cancel)");
+		double sendAmount = console.getUserInputDouble("Enter amount");
+		if (sendAmount > getCurrentBalance()){
+			console.DisplayMessage("Transfer denied, insufficient funds.");}
+		else {
+			UpdateAccountID(sendToAcct, sendAmount);
+			UpdateUsersAccount(currentUser.getUser().getId(),-1.0*sendAmount);
 
-	private void sendBucks() {
+			}
+		}
+
+	private Double getCurrentBalance() {
 		RestTemplate restTemplate = new RestTemplate();
 		Integer getUserId = currentUser.getUser().getId();
+		Double amt = 0.0;
+//		try {
+		HttpHeaders headers = new HttpHeaders();
+//				headers.setBearerAuth(AUTH_TOKEN);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity entity = new HttpEntity<>(headers);
+		ResponseEntity<Double>  response = restTemplate.exchange(API_BASE_URL + "getbalance/" + getUserId,
+				HttpMethod.GET, entity, Double.class);
+		if (response.getBody() != null) {
+			amt = response.getBody();
+		}
+		return amt;
+	}
 
+
+	private void UpdateUsersAccount(Integer userID, Double TransferDollars) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(currentUser.getToken());
+		HttpEntity entity = new HttpEntity(headers);
+
+		Integer rowsUpdtUsersAccount = restTemplate.postForObject (API_BASE_URL + "transfer/" + userID +"/" + TransferDollars,
+				entity, Integer.class);
+		System.out.println("Rows updated for UpdateUsers Account = " +  rowsUpdtUsersAccount);
+	}
+
+	private void UpdateAccountID(Integer acct, Double TransferDollars) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(currentUser.getToken());
+		HttpEntity entity = new HttpEntity(headers);
+
+		Integer rowsUpdatedAccountId = restTemplate.postForObject (API_BASE_URL + "transfersend/" + acct +"/" + TransferDollars,
+				entity, Integer.class);
+		System.out.println("Rows updated for UpdateAccountID = " +  rowsUpdatedAccountId);
+	}
+
+	private void showTranfersCandidates() {
+		RestTemplate restTemplate = new RestTemplate();
+		Integer getUserId = currentUser.getUser().getId();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity entity = new HttpEntity(headers);
 
 		ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "users/" + getUserId,
 				HttpMethod.GET, entity, User[].class);
-//
+
 		User[] users = response.getBody();
 
 		if (response.getBody() == null) {
-			System.out.println("Sorry, nobody wants your money :)");
+			console.DisplayMessage("Sorry, nobody wants your money :)");
 		} else {
-			System.out.println("----------------");
-			System.out.println(" ID      Name  ");
-			System.out.println("----------------");
+			console.DisplayMessage("----------------");
+			console.DisplayMessage(" ID      Name  ");
+			console.DisplayMessage("----------------");
 
 			for (int i = 0; i < users.length; i++) {
 				int val1 = users[i].getId();
 				String val2 = users[i].getUsername();
 				System.out.println(String.format("%d\t %-12s", val1, val2));
 			}
-			System.out.println("----------------");
+			console.DisplayMessage("----------------");
 		}
 	}
 
