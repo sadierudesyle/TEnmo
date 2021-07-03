@@ -74,7 +74,7 @@ public class ConsoleService {
 		return result;
 	}
 
-//	public void DisplayMessage(String input) {
-//		System.out.println(input);
-//	}
+	public void DisplayMessage(String input) {
+		System.out.println(input);
+	}
 }

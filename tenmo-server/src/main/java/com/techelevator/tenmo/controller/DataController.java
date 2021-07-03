@@ -1,8 +1,6 @@
 package com.techelevator.tenmo.controller;
 
-import com.techelevator.tenmo.dao.JdbcAccountsDAO;
-import com.techelevator.tenmo.dao.JdbcTransfersDAO;
-import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.dao.*;
 import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
@@ -27,12 +25,17 @@ public class DataController {
     private UserDao userDao;
     private JdbcAccountsDAO jdbcAccountsDAO;
     private JdbcTransfersDAO jdbcTransfersDAO;
+    private JdbcXferDetailDAO jdbcXferDetailDAO;
+    private JdbcUserDao jdbcUserDao;
 
 
-    public DataController(JdbcAccountsDAO jdbcAccountsDAO, JdbcTransfersDAO jdbcTransfersDAO)
+    public DataController(JdbcAccountsDAO jdbcAccountsDAO, JdbcTransfersDAO jdbcTransfersDAO,
+                          JdbcXferDetailDAO jdbcXferDetailDAO, JdbcUserDao jdbcUserDao)
      {
         this.jdbcAccountsDAO = jdbcAccountsDAO;
         this.jdbcTransfersDAO = jdbcTransfersDAO;
+        this.jdbcXferDetailDAO = jdbcXferDetailDAO;
+        this.jdbcUserDao = jdbcUserDao;
     }
 
     @RequestMapping(value = "/getbalance/{id}", method = RequestMethod.GET)
@@ -43,8 +46,17 @@ public class DataController {
 
     @RequestMapping(value = "/getalltransfers/{id}", method = RequestMethod.GET)
     public List<XferData> getAllTransfers(@PathVariable int id) {
-        int breakpoint = 1;
-        return jdbcTransfersDAO.getAllTransfers(id)     ;
+        return jdbcTransfersDAO.getAllTransfers(id);
+    }
+
+    @RequestMapping(value = "/transferdetail/{transferid}", method = RequestMethod.GET)
+    public XferDetail getTransferDetails(@PathVariable int transferid)   {
+        return jdbcXferDetailDAO.getDetail(transferid);
+    }
+
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
+    public List<User> findForTransfer(@PathVariable int id) {
+        return jdbcUserDao.findForTransfer(id);
     }
 }
 

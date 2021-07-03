@@ -1,8 +1,6 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.model.XferData;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConService;
@@ -13,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 
 public class App {
@@ -128,7 +127,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Integer getUserId = currentUser.getUser().getId();
 		ConService spitItOut = new ConService();
 		XferData[] items = null;
-		ResponseEntity<XferData[]>  history = null;
+		ResponseEntity<XferData[]> history = null;
 
 		HttpHeaders headers = new HttpHeaders();
 //				headers.setBearerAuth(AUTH_TOKEN);
@@ -143,23 +142,53 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		items = history.getBody();
 
 
-		if (history.getBody() != null) {
+		if (history.getBody() != null && items.length > 0) {
 			System.out.println("------------------------------------");
 			System.out.println(" Transfers");
 			System.out.println(" ID      From/To             Amount");
 			System.out.println("------------------------------------");
-		for (int i = 0; i< items.length; i++){
-			int val1 = items[i].getTransferId();
-			String val2 = items[i].getDirection();
-			String val3 = items[i].getUsername();
-			double  val4  = items[i].getAmount();
-			System.out.println(String.format(" %d %7s: %-12s\t$%.2f", val1, val2, val3,val4));
+			for (int i = 0; i < items.length; i++) {
+				int val1 = items[i].getTransferId();
+				String val2 = items[i].getDirection();
+				String val3 = items[i].getUsername();
+				double val4 = items[i].getAmount();
+				System.out.println(String.format(" %d %7s: %-12s\t$%.2f", val1, val2, val3, val4));
+			}
+			System.out.println("-------------------------------------------------------");
+			Integer input = console.getUserInputInteger("Please enter transfer ID to view details (0 to cancel)");
+
+			if (input.equals(0)) {
+				System.out.println("");
+			} else {
+				ResponseEntity<XferDetail> response = restTemplate.exchange(API_BASE_URL + "transferdetail/" + input,
+						HttpMethod.GET, entity, XferDetail.class);
+				XferDetail data = response.getBody();
+
+				if (data == null) {
+					System.out.println("Invalid entry.");
+				} else {
+					String v1 = String.valueOf(data.getTransferId());
+					String v2 = String.valueOf(data.getUserFrom());
+					String v3 = String.valueOf(data.getUserTo());
+					String v4 = String.valueOf(data.getType());
+					String v5 = String.valueOf(data.getStatus());
+					String v6 = String.format("%.2f", data.getAmount());
+
+					System.out.println("------------------------------------");
+					System.out.println("Transfer Details");
+					System.out.println("------------------------------------");
+
+
+					console.DisplayMessage("Id: " + v1);
+					console.DisplayMessage("From: " + v2);
+					console.DisplayMessage("To: " + v3);
+					console.DisplayMessage("Type: " + v4);
+					console.DisplayMessage("Status: " + v5);
+					console.DisplayMessage("Amount: $" + v6);
+				}
+			}
 		}
-			System.out.println("------------------------------------");
-			System.out.println("Please enter transfer ID to view details (0 to cancel):");
-		}
-		else {System.out.println("Sorry No Transfers");}
-    }
+	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
@@ -167,8 +196,32 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-		
+		RestTemplate restTemplate = new RestTemplate();
+		Integer getUserId = currentUser.getUser().getId();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity entity = new HttpEntity(headers);
+
+		ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "users/" + getUserId,
+				HttpMethod.GET, entity, User[].class);
+//
+		User[] users = response.getBody();
+
+		if (response.getBody() == null) {
+			System.out.println("Sorry, nobody wants your money :)");
+		} else {
+			System.out.println("----------------");
+			System.out.println(" ID      Name  ");
+			System.out.println("----------------");
+
+			for (int i = 0; i < users.length; i++) {
+				int val1 = users[i].getId();
+				String val2 = users[i].getUsername();
+				System.out.println(String.format("%d\t %-12s", val1, val2));
+			}
+			System.out.println("----------------");
+		}
 	}
 
 	private void requestBucks() {

@@ -33,8 +33,7 @@ public class JdbcXferDetailDAO implements XferDetailDAO {
              "WHERE t.transfer_id = ?";
         SqlRowSet returnVal = jdbcTemplate.queryForRowSet(sql, xfernum);
         if (returnVal.next()) {
-            mapRowToTransfer(returnVal);
-            return values;
+            return mapRowToTransfer(returnVal);
         }
         // fix this to be informative
         return null;

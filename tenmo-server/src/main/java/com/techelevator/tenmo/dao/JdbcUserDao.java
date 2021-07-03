@@ -79,6 +79,22 @@ public class JdbcUserDao implements UserDao {
         return true;
     }
 
+    public List<User> findForTransfer(int userId) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT a.user_id, u.username FROM accounts AS a " +
+                "JOIN users u ON a.user_id = u.user_id " +
+                "WHERE u.user_id <> ? " +
+                "ORDER BY u.username";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+        while(results.next()) {
+            User user = new User();
+            user.setId(results.getLong("user_id"));
+            user.setUsername(results.getString("username"));
+            users.add(user);
+        }
+        return users;
+    }
+
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setId(rs.getLong("user_id"));
