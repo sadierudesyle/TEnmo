@@ -1,14 +1,8 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Accounts;
-import com.techelevator.tenmo.model.User;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component                            //added
 public class JdbcAccountsDAO implements AccountsDAO {
@@ -29,6 +23,23 @@ public class JdbcAccountsDAO implements AccountsDAO {
             return returnVal;}
         else {return -1.0;}
     }
+
+    @Override
+    public Integer sendMoney(double amount, Integer userId) {
+        sql = "UPDATE accounts SET balance = balance + ?" +
+                "WHERE user_id = ?";
+
+        int rowsUpdt = jdbcTemplate.update(sql, amount, userId);
+        return rowsUpdt;
+    }
+
+
+    @Override
+    public Integer deductMoneySent(double amount, Integer userId) {
+        sql = "UPDATE accounts SET balance = balance - ? " +
+                "WHERE user_id = ?";
+        int rUpdt =  jdbcTemplate.update(sql, amount, userId);
+        return rUpdt;}
 
 
 }

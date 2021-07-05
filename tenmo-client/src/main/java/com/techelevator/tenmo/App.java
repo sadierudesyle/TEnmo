@@ -166,19 +166,23 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		// TODO Auto-generated method stub
 		
 	}
-	private void sendBucks (){
-    	showTranfersCandidates();
-		Integer sendToAcct = console.getUserInputInteger
+	private void sendBucks () {
+		showTranfersCandidates();
+		Integer sendToUser = console.getUserInputInteger
 				("Enter ID of user you are sending to (0 to cancel)");
-		double sendAmount = console.getUserInputDouble("Enter amount");
-		if (sendAmount > getCurrentBalance()){
-			console.DisplayMessage("Transfer denied, insufficient funds.");}
-		else {
-			UpdateAccountID(sendToAcct, sendAmount);
-			UpdateUsersAccount(currentUser.getUser().getId(),-1.0*sendAmount);
+		if (sendToUser != 0) {
+			double sendAmount = console.getUserInputDouble("Enter amount");
+			if (sendAmount > getCurrentBalance()) {
+				console.DisplayMessage("Transfer denied, insufficient funds.");
+			} else {
+				UpdateAccountID(sendToUser, sendAmount);
+				UpdateUsersAccount(currentUser.getUser().getId(), sendAmount);
+				updateTransferAdded(currentUser.getUser().getId(), sendToUser, sendAmount);
 
 			}
 		}
+	}
+
 
 	private Double getCurrentBalance() {
 		RestTemplate restTemplate = new RestTemplate();
@@ -197,7 +201,6 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		return amt;
 	}
 
-
 	private void UpdateUsersAccount(Integer userID, Double TransferDollars) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -207,19 +210,17 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		Integer rowsUpdtUsersAccount = restTemplate.postForObject (API_BASE_URL + "transfer/" + userID +"/" + TransferDollars,
 				entity, Integer.class);
-		System.out.println("Rows updated for UpdateUsers Account = " +  rowsUpdtUsersAccount);
 	}
 
-	private void UpdateAccountID(Integer acct, Double TransferDollars) {
+	private void UpdateAccountID(Integer userID, Double TransferDollars) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(currentUser.getToken());
 		HttpEntity entity = new HttpEntity(headers);
 
-		Integer rowsUpdatedAccountId = restTemplate.postForObject (API_BASE_URL + "transfersend/" + acct +"/" + TransferDollars,
+		Integer rowsUpdatedAccountId = restTemplate.postForObject (API_BASE_URL + "transfersend/" + userID +"/" + TransferDollars,
 				entity, Integer.class);
-		System.out.println("Rows updated for UpdateAccountID = " +  rowsUpdatedAccountId);
 	}
 
 	private void showTranfersCandidates() {
@@ -248,6 +249,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 			console.DisplayMessage("----------------");
 		}
+	}
+
+	private Integer updateTransferAdded(Integer userID, Integer sendUserID, double amount) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(currentUser.getToken());
+		HttpEntity entity = new HttpEntity(headers);
+
+		Integer storeTransfer = restTemplate.postForObject (API_BASE_URL + "transfer/" + userID +"/" + sendUserID+ "/" + amount,
+				entity, Integer.class);
+
+		return storeTransfer;
 	}
 
 	private void requestBucks() {

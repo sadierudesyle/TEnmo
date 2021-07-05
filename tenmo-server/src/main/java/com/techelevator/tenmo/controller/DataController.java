@@ -30,8 +30,7 @@ public class DataController {
 
 
     public DataController(JdbcAccountsDAO jdbcAccountsDAO, JdbcTransfersDAO jdbcTransfersDAO,
-                          JdbcXferDetailDAO jdbcXferDetailDAO, JdbcUserDao jdbcUserDao)
-     {
+                          JdbcXferDetailDAO jdbcXferDetailDAO, JdbcUserDao jdbcUserDao) {
         this.jdbcAccountsDAO = jdbcAccountsDAO;
         this.jdbcTransfersDAO = jdbcTransfersDAO;
         this.jdbcXferDetailDAO = jdbcXferDetailDAO;
@@ -50,7 +49,7 @@ public class DataController {
     }
 
     @RequestMapping(value = "/transferdetail/{transferid}", method = RequestMethod.GET)
-    public XferDetail getTransferDetails(@PathVariable int transferid)   {
+    public XferDetail getTransferDetails(@PathVariable int transferid) {
         return jdbcXferDetailDAO.getDetail(transferid);
     }
 
@@ -61,14 +60,21 @@ public class DataController {
 
 
     @RequestMapping(value = "/transfer/{id}/{amount}", method = RequestMethod.POST)
-    public Integer deductMoneySent(@PathVariable double amount, Integer id) {
-        return jdbcTransfersDAO.deductMoneySent(amount, id);
+    public Integer deductMoneySent(@PathVariable double amount, @PathVariable Integer id) {
+        return jdbcAccountsDAO.deductMoneySent(amount, id);
     }
 
-    @RequestMapping(value = "/transfersend/{account}/{amount}", method = RequestMethod.POST)
-    public Integer sendMoney(@PathVariable double amount, Integer account) {
-        return jdbcTransfersDAO.sendMoney(amount, account);
+    @RequestMapping(value = "/transfersend/{id}/{amount}", method = RequestMethod.POST)
+    public Integer sendMoney(@PathVariable double amount, @PathVariable Integer id) {
+        return jdbcAccountsDAO.sendMoney(amount, id);
     }
+
+    @RequestMapping(value = "/transfer/{id}/{sendtouserid}/{amount}", method = RequestMethod.POST)
+    public Integer updateTransferAdded(@PathVariable Integer id, @PathVariable Integer sendtouserid, @PathVariable double amount) {
+        return jdbcTransfersDAO.updateTransferAdded(id, sendtouserid, amount);
+    }
+
 }
+
 
 

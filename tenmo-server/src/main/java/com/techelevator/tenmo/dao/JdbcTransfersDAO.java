@@ -1,8 +1,10 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Accounts;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.XferData;
 import com.techelevator.tenmo.model.XferDetail;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -15,13 +17,11 @@ import java.util.List;
 public class JdbcTransfersDAO implements TransfersDAO {
     String sql;
     private JdbcTemplate jdbcTemplate;
+    private AccountsDAO accountsDAO;
 
     public JdbcTransfersDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-
-
 
     public List<XferData> getAllTransfers(int userId) {
         List<XferData> transfers = new ArrayList<XferData>();
@@ -43,7 +43,6 @@ public class JdbcTransfersDAO implements TransfersDAO {
         }
     }
 
-
     public void getTransfersTo(int userId,List<XferData> transfers) {
         sql = "SELECT transfer_id, amount, 'To' as From_To, username FROM transfers AS t "+
         "JOIN accounts a on account_to = a.account_id "+
@@ -55,23 +54,16 @@ public class JdbcTransfersDAO implements TransfersDAO {
             XferData transfer = mapRowToTransfer(returnV);
             transfers.add(transfer);
         }
-        }
+    }
 
 
-    public int sendMoney(double amount, Integer account) {
-        sql = "UPDATE accounts SET balance = balance + ?" +
-              "WHERE account_id = ?";
+    public Integer updateTransferAdded(Integer account_from, Integer account_to, Double amount) {
+        sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (2, 2, (SELECT account_id FROM accounts WHERE user_id = ?), (SELECT account_id FROM accounts WHERE user_id = ?), ?); ";
 
-      int rowsUpdt = jdbcTemplate.update(sql, amount, account);
-      return rowsUpdt;
-        }
-
-    public int deductMoneySent(double amount, Integer userId) {
-        sql = "UPDATE accounts SET balance = balance + ? " +
-                 "WHERE user_id = ?";
-      int rUpdt =  jdbcTemplate.update(sql, amount, userId);
-        return rUpdt;}
-
+        Integer accountUpdated = jdbcTemplate.update(sql, account_from, account_to, amount);
+        return accountUpdated;
+    }
 
 
 private XferData mapRowToTransfer(SqlRowSet results) {
