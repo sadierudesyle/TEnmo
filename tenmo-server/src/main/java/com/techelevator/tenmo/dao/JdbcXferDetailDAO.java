@@ -22,6 +22,7 @@ public class JdbcXferDetailDAO implements XferDetailDAO {
     @Override
     public XferDetail getDetail(int xfernum)
  {
+     XferDetail returnVal = new XferDetail();
       sql = "SELECT transfer_id, transfer_type_desc, transfer_status_desc, " +
               "q.username as recipient, amount, u.username as sender  FROM transfers AS t "+
              "JOIN accounts b on account_to = b.account_id "+
@@ -31,12 +32,15 @@ public class JdbcXferDetailDAO implements XferDetailDAO {
              "JOIN transfer_statuses ts ON ts.transfer_status_id = t.transfer_status_id "+
              "JOIN transfer_types tt ON tt.transfer_type_id = t.transfer_type_id "+
              "WHERE t.transfer_id = ?";
-        SqlRowSet returnVal = jdbcTemplate.queryForRowSet(sql, xfernum);
-        if (returnVal.next()) {
-            return mapRowToTransfer(returnVal);
+
+
+      SqlRowSet results = jdbcTemplate.queryForRowSet(sql, xfernum);
+//     SqlRowSet returnVal = jdbcTemplate.queryForRowSet(sql, xfernum);
+        if (results.next()) {
+            returnVal= mapRowToTransfer(results);
         }
         // fix this to be informative
-        return null;
+        return returnVal;
     }
 
 private XferDetail mapRowToTransfer(SqlRowSet results) {
