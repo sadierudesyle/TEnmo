@@ -9,10 +9,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.aop.framework.AopInfrastructureBean;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class testJdbcXferDetailDAO extends TEnmoDAOTests {
 
@@ -22,10 +24,10 @@ public class testJdbcXferDetailDAO extends TEnmoDAOTests {
     private JdbcXferDetailDAO sut;
 
 
-    @Before
-    public void setup () {
-//        JdbcXferDetailDAO testXfer = new JdbcXferDetailDAO(jdbcTemplate);
-    }
+//    @Before
+//    public void setup () {
+////        JdbcXferDetailDAO testXfer = new JdbcXferDetailDAO(jdbcTemplate);
+//    }
 @Test
     public void testJdbcXferDetailDAO() {
         XferDetail returnDetail = testXfer.getDetail(3001) ;
@@ -52,5 +54,21 @@ public class testJdbcXferDetailDAO extends TEnmoDAOTests {
         Assert.assertEquals(returnVal4, eVal4);
         Assert.assertEquals(returnVal5, eVal5);
         Assert.assertEquals(returnVal6, eVal6);
+//
+//        Double value1 = 33.33;
+//        String value2 = "2";
+//        Integer value3 = 3021;
+//        String value4 = "2";
+//        String value5 = "2006";
+//        String value6 = "2002";
+//
+//        Assert.assertEquals(returnVal1, value1);
+//        Assert.assertEquals(returnVal3, value3);
+//        Assert.assertEquals(returnVal2, value2);
+//        Assert.assertEquals(returnVal4, value4);
+//        Assert.assertEquals(returnVal5, value5);
+//        Assert.assertEquals(returnVal6, value6);
+
+
 }
 }
