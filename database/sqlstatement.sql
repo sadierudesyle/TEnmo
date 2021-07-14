@@ -6,7 +6,7 @@ VALUES (2, 2, (SELECT account_id FROM accounts WHERE user_id = 1001), (SELECT ac
 
 select * FROM accounts
 
-select * FROM transfers
-select * FROM accounts
+select * FROM transfers;
+select * FROM accounts;
 SELECT account_id FROM accounts WHERE user_id = 1001
 
